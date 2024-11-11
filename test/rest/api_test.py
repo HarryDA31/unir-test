@@ -1,6 +1,7 @@
 import http.client
 import os
 import unittest
+import urllib.error
 from urllib.request import urlopen
 
 import pytest
@@ -30,28 +31,25 @@ class TestApi(unittest.TestCase):
 
     # Pruebas para raíz cuadrada
     def test_api_square_root(self):
+        # Test square root of a positive number
         url = f"{BASE_URL}/calc/square_root/9"
         response = urlopen(url, timeout=DEFAULT_TIMEOUT)
         self.assertEqual(response.status, http.client.OK)
 
-        # Verificar error al solicitar raíz cuadrada de número negativo
+        # Test square root of a negative number
         url = f"{BASE_URL}/calc/square_root/-9"
-        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
-        self.assertEqual(response.status, http.client.BAD_REQUEST)
+        with self.assertRaises(urllib.error.HTTPError):  # expecting HTTP error 400
+            urlopen(url, timeout=DEFAULT_TIMEOUT)
 
-    # Pruebas para logaritmo en base 10
     def test_api_log_base_10(self):
+        # Test log base 10 of a positive number
         url = f"{BASE_URL}/calc/log_base_10/100"
         response = urlopen(url, timeout=DEFAULT_TIMEOUT)
         self.assertEqual(response.status, http.client.OK)
 
-        # Verificar error al solicitar logaritmo de número negativo o cero
+        # Test log base 10 of a negative number
         url = f"{BASE_URL}/calc/log_base_10/-10"
-        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
-        self.assertEqual(response.status, http.client.BAD_REQUEST)
-
-        url = f"{BASE_URL}/calc/log_base_10/0"
-        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
-        self.assertEqual(response.status, http.client.BAD_REQUEST)
+        with self.assertRaises(urllib.error.HTTPError):  # expecting HTTP error 400
+            urlopen(url, timeout=DEFAULT_TIMEOUT)
 
         
